@@ -46,12 +46,12 @@ print(b.view(1,6))
 print(a.view(1, -1)) # "-1" 为自适应
 print(b.view(-1, 6))
 
-
 ########
-
-m = nn.Linear(20, 30)
+m = nn.Linear(20, 20)
 print(m)
 input = t.randn(128, 20)
 output = m(input)
 print(output.size())
+print(output,input)
 #torch.Size([128, 30])
+

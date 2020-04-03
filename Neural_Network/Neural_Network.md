@@ -66,6 +66,19 @@ width *3 = width *1 - width *2 + 1 = 3 - 3 + 1
 
 ### modules()
 ```python
+for name,sub_module in net.named_children():
+    if name in ['conv1']:
+        print(sub_module)
+```
+```python
+params = list(net.parameters())
+print(len(params))
+```
+```python
+for name,parameters in net.named_parameters():
+    print(name, ':', parameters.size())
+```
+```python
 for module in model.modules():
     print(module)
 ```
@@ -74,7 +87,6 @@ for name, module in model.named_children():
     if name in ['conv4', 'conv5']:
         print(module)
 ```
-
 ```python
 for param in model.parameters():
     print(type(param.data), param.size())
@@ -123,3 +135,4 @@ class torch.nn.Linear(in_features, out_features, bias=True)
 + `in_features` – size of each input sample
 + `out_features` – size of each output sample
 + `bias` – If set to `False`, the layer will not learn an additive bias. Default: `True`
+

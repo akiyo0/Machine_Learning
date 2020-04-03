@@ -29,22 +29,21 @@ class Net(nn.Module):
 
 net = Net()
 print(net)
-print("*****")
-for name,sub_module in net.named_children():
-    if name in ['conv1']:
-        print(sub_module)
-print("*****")
-params = list(net.parameters())
-print(len(params))
-print("*****")
-for name,parameters in net.named_parameters():
-    print(name, ':', parameters.size())
-print("*****")
+
 input = Variable(t.randn(1, 1, 32, 32))
-out = net(input)
+output = net(input)
 #print(out.size())
 
 net.zero_grad()
+output.backward(Variable(output))
+output = net(input)
 
-out.backward(Variable(t.ones(1, 10)))
+net.zero_grad()
+output.backward(output)
+output = net(input)
 
+target = Variable(t.arange(0, 10))
+
+criterion = nn.MSELoss()
+loss = criterion(output, target)
+print(loss)
