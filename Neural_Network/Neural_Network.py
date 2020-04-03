@@ -1,11 +1,14 @@
+import torch as t
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 
 class Net(nn.Module):
     def __init__(self):
         # nn.Module(单元)子类的函数必须在构造函数中执行父类的构造函数
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5) #输入图片为单通道,6输出,卷积核5
+        #self.conv1 = nn.Conv2d(1, 6, 5) #输入图片为单通道,6输出,卷积核5
+        self.add_module("conv1", nn.Conv2d(1, 6, 5)) #等价于
         self.conv2 = nn.Conv2d(6, 16, 5)
         # 仿射层/全连接层 y=Wx+b
         self.fc1 = nn.Linear(16*5*5, 120)
@@ -16,7 +19,7 @@ class Net(nn.Module):
         # 卷积 -> 激活 -> 池化
         x = F.max_pool2d(F.relu(self.conv1(x)), (2,2))
         x = F.max_pool2d(F.relu(self.conv2(x)), 2)
-        # reshape '-1'表示自适应
+        # 数据降维 reshape '-1'表示自适应
         x = x.view(x.size()[0], -1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
@@ -26,3 +29,22 @@ class Net(nn.Module):
 
 net = Net()
 print(net)
+print("*****")
+for name,sub_module in net.named_children():
+    if name in ['conv1']:
+        print(sub_module)
+print("*****")
+params = list(net.parameters())
+print(len(params))
+print("*****")
+for name,parameters in net.named_parameters():
+    print(name, ':', parameters.size())
+print("*****")
+input = Variable(t.randn(1, 1, 32, 32))
+out = net(input)
+#print(out.size())
+
+net.zero_grad()
+
+out.backward(Variable(t.ones(1, 10)))
+

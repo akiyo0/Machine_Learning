@@ -1,4 +1,7 @@
 import torch as t
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
 
 x = t.Tensor(5,3)
 
@@ -26,3 +29,29 @@ if t.cuda.is_available():
     x + y
 else:
     print("cuda is not available")
+
+## Pytorch 中 view 的用法
+'''
+把原先tensor中的数据按照行优先的顺序排成一个一维的数据
+（这里应该是因为要求地址是连续存储的），然后按照参数组合成其他维度的tensor。
+比如说是不管你原先的数据是[[[1,2,3],[4,5,6]]]还是[1,2,3,4,5,6]，
+因为它们排成一维向量都是6个元素，所以只要view函数的参数一致，得到的结果都是一样的。
+'''
+a=t.Tensor([[[1,2,3],[4,5,6]]])
+b=t.Tensor([1,2,3,4,5,6])
+
+print(a.view(1,6))
+print(b.view(1,6))
+
+print(a.view(1, -1)) # "-1" 为自适应
+print(b.view(-1, 6))
+
+
+########
+
+m = nn.Linear(20, 30)
+print(m)
+input = t.randn(128, 20)
+output = m(input)
+print(output.size())
+#torch.Size([128, 30])
