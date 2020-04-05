@@ -1,4 +1,4 @@
-## 对 Neural_Network 的若干点补充
+## 对 卷积神经网络(CNN) 的若干点补充
 ### Batch_Size
 Batch_Size（批尺寸）是机器学习中一个重要参数。Batch 的选择，首先决定的是下降的方向。
 如果数据集比较小，完全可以采用全数据集 (Full Batch Learning) 的形式，这样做至少有 2 个好处：
@@ -95,7 +95,31 @@ for param in model.parameters():
 `<class 'torch.FloatTensor'> (20L,)
 <class 'torch.FloatTensor'> (20L, 1L, 5L, 5L)`
 
+## 卷积神经网络的层级结构
++ 数据输入层 (Input layer)
++ 卷积计算层 (CONV layer)
++ ReLU激励层 (ReLU layer)
++ 池化层 (Pooling layer)
++ 全连接层 (FC layer)
+
+## 数据输入层
+该层要做的处理主要是对原始图像数据进行预处理，其中包括：
++ 去均值：把输入数据各个维度都中心化为0，如下图所示，其目的就是把样本的中心拉回到坐标系原点上。
++ 归一化：幅度归一化到同样的范围，如下所示，即减少各维度数据取值范围的差异而带来的干扰，比如，我们有两个维度的特征A和B，A范围是0到10，而B范围是0到10000，如果直接使用这两个特征是有问题的，好的做法就是归一化，即A和B的数据都变为0到1的范围。
++ PCA[^pca]/白化：用PCA降维；白化是对数据各个特征轴上的幅度归一化
+[^pca]: PCA(Principal Component Analysis)
 ## 卷积
+### 对卷积的理解
+1. 卷积的定义
+我们称 [公式] 为 [公式] 的卷积
+其连续的定义为：
+其离散的定义为：
+
+这两个式子有一个共同的特征：
+
+参考链接
+[1] 如何通俗易懂地解释卷积？ - 马同学的回答 - 知乎
+https://www.zhihu.com/question/22298352/answer/228543288
 ### torch.nn.Conv1d
 ```python
 class torch.nn.Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
@@ -136,3 +160,49 @@ class torch.nn.Linear(in_features, out_features, bias=True)
 + `out_features` – size of each output sample
 + `bias` – If set to `False`, the layer will not learn an additive bias. Default: `True`
 
+## 激活层
+
+## 池化层
+池化层夹在连续的卷积层中间， 用于<u>压缩数据和参数的量</u>，<u>减小过拟合</u>。简而言之，如果输入是图像的话，那么池化层的最主要作用就是压缩图像。
+
+下采样层也叫池化层，其具体操作与卷积层的操作基本相同，只不过下采样的卷积核为只取对应位置的最大值、平均值等（最大池化、平均池化），即矩阵之间的运算规律不一样，并且不经过反向传播的修改。
+
+池化操作就是图像的resize。池化层的具体作用包括：
+1. <b>特征不变性(invariance)</b>。在图像处理中也称为特征的尺度不变性。这种不变性包括translation(平移)，rotation(旋转)和scale(尺度)。图像压缩时去掉无关紧要的信息，留下的信息依然包含最重要的特征。则可认为具有尺度不变性的特征，即最能表达图像的特征。
+2. <b>特征降维</b>，即将图像信息之类中的冗余信息去除，抽取重要特征。
+3. 保留主要的特征同时减少参数(降维，效果类似PCA)和计算量，防止过拟合，提高模型泛化能力
+4. 一定程度上<b>防止过拟合</b>，方便优化。
+
+手段主要包括：
+`Max Pooling` 和 `Average Pooling`。实际中应用较多的是 `Max pooling`。
+对于每个 $2*2$ 的窗口选出最大的数作为输出矩阵的相应元素的值，比如输入矩阵第一个 $2*2$ 窗口中最大的数是6，那么输出矩阵的第一个元素就是6，如此类推。
+
+参考链接：
+[1] https://blog.csdn.net/weixin_38145317/article/details/89310404
+
+## 全连接层
+两层之间所有神经元都有权重连接，通常全连接层在卷积神经网络尾部。也就是跟传统的神经网络神经元的连接方式是一样的：
+
+### 一般CNN结构依次为
+1. `INPUT`
+2. [[`CONV`->`RELU`] * N -> `POOL`?] * M 
+3. [`FC`->`RELU`] * K
+4. `FC`
+
+### 训练算法
+1. 同一般机器学习算法，先定义Loss function，衡量和实际结果之间差距。
+2. 找到最小化损失函数的 $W$ 和 $b$， CNN中用的算法是SGD（随机梯度下降）。
+
+### 典型CNN
++ LeNet，这是最早用于数字识别的CNN
++ AlexNet， 2012 ILSVRC比赛远超第2名的CNN，比LeNet更深，用多层小卷积层叠加替换单大卷积层。
++ ZF Net， 2013 ILSVRC比赛冠军
++ GoogLeNet， 2014 ILSVRC比赛冠军
++ VGGNet， 2014 ILSVRC比赛中的模型，图像识别略差于GoogLeNet，但是在很多图像转化学习问题(比如object detection)上效果奇好
+
+### fine-tuning
+fine-tuning就是使用已用于其他目标、预训练好模型的权重或者部分权重，作为初始值开始训练。
+那为什么我们不用随机选取选几个数作为权重初始值？原因很简单，第一，自己从头训练卷积神经网络容易出现问题；第二，fine-tuning能很快收敛到一个较理想的状态，省时又省心。
+具体做法:
++ 复用相同层的权重，新定义层取随机权重初始值
++ 调大新定义层的的学习率，调小复用层学习率
