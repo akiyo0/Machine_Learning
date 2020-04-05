@@ -107,8 +107,10 @@ for param in model.parameters():
 + 去均值：把输入数据各个维度都中心化为0，如下图所示，其目的就是把样本的中心拉回到坐标系原点上。
 + 归一化：幅度归一化到同样的范围，如下所示，即减少各维度数据取值范围的差异而带来的干扰，比如，我们有两个维度的特征A和B，A范围是0到10，而B范围是0到10000，如果直接使用这两个特征是有问题的，好的做法就是归一化，即A和B的数据都变为0到1的范围。
 + PCA[^pca]/白化：用PCA降维；白化是对数据各个特征轴上的幅度归一化
-[^pca]: PCA(Principal Component Analysis)
-## 卷积
+
+[^pca]: PCA(主成分分析, Principal Component Analysis) 是一种常见的数据分析方式，常用于高维数据的降维，可用于提取数据的主要特征分量。
+
+## 卷积层
 ### 对卷积的理解
 1. 卷积的定义
 我们称 [公式] 为 [公式] 的卷积
@@ -120,6 +122,17 @@ for param in model.parameters():
 参考链接
 [1] 如何通俗易懂地解释卷积？ - 马同学的回答 - 知乎
 https://www.zhihu.com/question/22298352/answer/228543288
+
+### 卷积层关键操作
++ 局部关联：每个神经元看做一个滤波器(filter)
++ 窗口滑动：filter对局部数据计算
+感受野：receptive field
+
+关键词
++ 深度/depth（解释见下图）
++ 步长/stride （窗口一次滑动的长度）
++ 填充值/zero-padding
+
 ### torch.nn.Conv1d
 ```python
 class torch.nn.Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
@@ -149,6 +162,12 @@ class torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=
 $$\operatorname{out}\left(N_{i}, C_{\text{out}_{j}}\right)=\operatorname{bias}\left(C_{\text{out}_{j}}\right)+\sum_{k=0}^{C_{\text{in}}-1} \text {weight}\left(C_{\text{out}_{j}}, k\right) \star \text{input}\left(N_{i}, k\right)$$
 
 where $\star$ is the valid 2D cross-correlation operator, $N$ is a batch size, $C$ denotes a number of channels, $H$ is a height of input planes in pixels, and $W$ is width in pixels.
+
+## 参数共享机制
+在卷积层中每个神经元连接数据窗的权重是固定的，每个神经元只关注一个特性。神经元就是图像处理中的滤波器，比如边缘检测专用的Sobel滤波器，即卷积层的每个滤波器都会有自己所关注一个图像特征，比如垂直边缘，水平边缘，颜色，纹理等等，这些所有神经元加起来就好比就是整张图像的特征提取器集合。
+需要估算的权重个数减少: AlexNet 1亿 => 3.5w
+一组固定的权重和不同窗口内数据做内积: 卷积
+
 
 ## 仿射层/全连接层
 ### torch.nn.Linear
