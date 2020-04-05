@@ -70,47 +70,6 @@ def main():
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             print(type(data))
-            inputs, labels = data
-            inputs, labels = Variable(inputs), Variable(labels)
-
-            optimizer.zero_grad()
-
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-
-            optimizer.step()
-            running_loss += loss.item()
-
-            if i%2000 == 1999:
-                print('[%d, %5d] loss: %.3f'%(epoch+1, i+1, running_loss / 2000))
-                running_loss = 0.0
-    print("Finished Training!")
-
-    '''
-    outputs = net(Variable(images))
-    _, predicted = t.max(outputs.data, 1)
-    print('预测结果:', ' '.join('%5s' %classes[predicted[j]] for j in range(4)))
-    '''
-    dataiter = iter(testloader)
-    images, labels = dataiter.next()
-    print('实际的lable:', ' '.join('%08s'%classes[labels[j]] for j in range(4)))
-
-    plt.imshow(show(tv.utils.make_grid(images / 2-0.5)).resize((400,100)))
-    plt.axis('off')
-    plt.show()
-
-    correct = 0
-    total = 0
-    
-    for data in testloader:
-        images, labels = data
-        outputs = net(Variable(images))
-        _, predicted = t.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum()
-    
-    print('1000张测试集中的准确率为：%d %%' % (100 * correct / total))
 
 if __name__ == '__main__':
     main()
