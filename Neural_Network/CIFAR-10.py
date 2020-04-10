@@ -69,17 +69,15 @@ def main():
     for epoch in range(2):
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
-            print(type(data))
-            inputs, labels = data
-            inputs, labels = Variable(inputs), Variable(labels)
+            inputs, labels = Variable(data[0]), Variable(data[1])
 
-            optimizer.zero_grad()
+            optimizer.zero_grad() ##???
 
             outputs = net(inputs)
             loss = criterion(outputs, labels)
-            loss.backward()
+            loss.backward() ##???
 
-            optimizer.step()
+            optimizer.step() ##???
             running_loss += loss.item()
 
             if i%2000 == 1999:

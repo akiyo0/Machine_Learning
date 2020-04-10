@@ -1,5 +1,7 @@
+from __future__ import print_function
 import torch as t
 from torch.autograd import Variable
+
 '''
 x = Variable(t.ones(2, 2), requires_grad=True)
 y = x.sum()
@@ -60,3 +62,5 @@ x = Variable(t.ones(4, 5))
 y = t.cos(x)
 x_tensor_cos = t.cos(x.data)
 print(x_tensor_cos == t.cos(x.data))
+
+######

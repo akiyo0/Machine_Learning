@@ -111,17 +111,24 @@ for param in model.parameters():
 [^pca]: PCA(主成分分析, Principal Component Analysis) 是一种常见的数据分析方式，常用于高维数据的降维，可用于提取数据的主要特征分量。
 
 ## 卷积层
-### 对卷积的理解
+### 卷积
 1. 卷积的定义
-我们称 [公式] 为 [公式] 的卷积
-其连续的定义为：
-其离散的定义为：
+    我们称 [公式] 为 [公式] 的卷积
+    其连续的定义为：
+    
+    其离散的定义为：
+    
+    这两个式子有一个共同的特征：
+    
+    参考链接
+    如何通俗易懂地解释卷积？ - 马同学的回答 - 知乎
+    https://www.zhihu.com/question/22298352/answer/228543288
 
-这两个式子有一个共同的特征：
+2. 反卷积
+2. 转置卷积
 
-参考链接
-[1] 如何通俗易懂地解释卷积？ - 马同学的回答 - 知乎
-https://www.zhihu.com/question/22298352/answer/228543288
+一文搞懂反卷积，转置卷积
+https://blog.csdn.net/LoseInVain/article/details/81098502
 
 ### 卷积层关键操作
 + 局部关联：每个神经元看做一个滤波器(filter)
@@ -164,6 +171,11 @@ $$\operatorname{out}\left(N_{i}, C_{\text{out}_{j}}\right)=\operatorname{bias}\l
 where $\star$ is the valid 2D cross-correlation operator, $N$ is a batch size, $C$ denotes a number of channels, $H$ is a height of input planes in pixels, and $W$ is width in pixels.
 
 ## 参数共享机制
+
+权值共享
+图片的底层特征是与特征在图片中的位置无关的。
+输出层的每一个像素，是由输入层对应位置的 $F*F$ 的局部图片，与相同的一组 $F*F$ 的参数（或称权值）做内积，再经过非线性单元计算而来的。
+
 在卷积层中每个神经元连接数据窗的权重是固定的，每个神经元只关注一个特性。神经元就是图像处理中的滤波器，比如边缘检测专用的Sobel滤波器，即卷积层的每个滤波器都会有自己所关注一个图像特征，比如垂直边缘，水平边缘，颜色，纹理等等，这些所有神经元加起来就好比就是整张图像的特征提取器集合。
 需要估算的权重个数减少: AlexNet 1亿 => 3.5w
 一组固定的权重和不同窗口内数据做内积: 卷积
@@ -180,6 +192,9 @@ class torch.nn.Linear(in_features, out_features, bias=True)
 + `bias` – If set to `False`, the layer will not learn an additive bias. Default: `True`
 
 ## 激活层
+如果网络中的所有隐含单元的激活函数都取线性函数，那么对于任何这种网络，我们总可以找到一个等价的无隐含单元的网络。<u>这是由于连续的线性变换的组合本身是一个线性变换</u>。然而，如果隐含单元的数量小于输入单元的数量或者小于输出单元的数量，那么网络能够产生的变换不是最一般的从输入到输出的线性变换，因为在隐含单元出的维度降低造成了信息丢失。（来源PRML）
+https://blog.csdn.net/xingchengmeng/article/details/56289427
+https://zhuanlan.zhihu.com/p/92412922
 
 ## 池化层
 池化层夹在连续的卷积层中间， 用于<u>压缩数据和参数的量</u>，<u>减小过拟合</u>。简而言之，如果输入是图像的话，那么池化层的最主要作用就是压缩图像。

@@ -69,7 +69,7 @@ def main():
     for epoch in range(2):
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
-            print(type(data))
-
+            inputs, labels = Variable(data[0]), Variable(data[1])
+            print(inputs, labels)
 if __name__ == '__main__':
     main()
