@@ -1,12 +1,15 @@
 import numpy as np
 import random
 import configparser
+import sys
+sys.path.insert(1, '/Volumes/TimeMachine/Github/Machine_Learning/Deep_Learning/Neural_Network/Object/item_3_U-Net/Keras/lib')
 
-from lib.help_functions import load_hdf5
-from lib.help_functions import visualize
-from lib.help_functions import group_images
 
-from lib.pre_processing import my_PreProc
+from help_functions import load_hdf5
+from help_functions import visualize
+from help_functions import group_images
+
+from pre_processing import my_PreProc
 
 
 #To select the same images
@@ -21,7 +24,7 @@ def get_data_training(DRIVE_train_imgs_original,
                       inside_FOV):
     train_imgs_original = load_hdf5(DRIVE_train_imgs_original)
     train_masks = load_hdf5(DRIVE_train_groudTruth) #masks always the same
-    # visualize(group_images(train_imgs_original[0:20,:,:,:],5),'imgs_train')#.show()  #check original imgs train
+    visualize(group_images(train_imgs_original[0:20,:,:,:],5),'imgs_train').show()  #check original imgs train
 
 
     train_imgs = my_PreProc(train_imgs_original)
