@@ -9,7 +9,7 @@
 
 
 import numpy as np
-import ConfigParser
+import configparser
 
 from keras.models import Model
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
@@ -21,10 +21,11 @@ from keras.optimizers import SGD
 
 import sys
 sys.path.insert(0, './lib/')
-from help_functions import *
+
+from lib.help_functions import *
 
 #function to obtain data for training/testing (validation)
-from extract_patches import get_data_training
+from lib.extract_patches import get_data_training
 
 
 
@@ -44,7 +45,7 @@ def get_unet(n_ch,patch_height,patch_width):
     conv3 = Conv2D(128, (3, 3), activation='relu', padding='same',data_format='channels_first')(pool2)
     conv3 = Dropout(0.2)(conv3)
     conv3 = Conv2D(128, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv3)
-
+    #
     up1 = UpSampling2D(size=(2, 2))(conv3)
     up1 = concatenate([conv2,up1],axis=1)
     conv4 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(up1)
