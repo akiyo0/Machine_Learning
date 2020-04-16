@@ -26,6 +26,7 @@ from lib.help_functions import *
 
 #function to obtain data for training/testing (validation)
 from lib.extract_patches import get_data_training
+from keras.layers.convolutional import Convolution2D
 
 
 
@@ -133,8 +134,10 @@ def get_gnet(n_ch,patch_height,patch_width):
     return model
 
 #========= Load settings from Config file
-config = ConfigParser.RawConfigParser()
-config.read('configuration.txt')
+config = configparser.RawConfigParser()
+print(config.read('configuration.txt'))
+#print(config.sections())
+print("************")
 #patch to the datasets
 path_data = config.get('data paths', 'path_local')
 #Experiment name
