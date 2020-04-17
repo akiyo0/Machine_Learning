@@ -1,5 +1,5 @@
 [data_paths]
-path_local = /Volumes/TimeMachine/Github/---Exclude_Items---/DRIVE_datasets_training_testing/
+path_local = /Volumes/TimeMachine/Github/_Exclude_Items_/DRIVE_datasets_training_testing/
 train_imgs_original = DRIVE_dataset_imgs_train.hdf5
 train_groundTruth = DRIVE_dataset_groundTruth_train.hdf5
 train_border_masks = DRIVE_dataset_borderMasks_train.hdf5
