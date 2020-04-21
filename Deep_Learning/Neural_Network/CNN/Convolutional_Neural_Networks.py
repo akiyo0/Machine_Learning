@@ -70,6 +70,7 @@ def main():
 
     print(loss)
 
+
 if __name__ == '__main__':
     main()
 

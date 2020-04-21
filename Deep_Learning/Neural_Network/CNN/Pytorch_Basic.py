@@ -30,12 +30,12 @@ print(a.size(), a.numel())
 a = t.Tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 b = t.Tensor(a.size())
 c = t.arange(1, 6, 2).tolist()
-print(c)
+#print(c)
 
 # 索引操作
 b = t.randn(3, 4)
-print(b[0], b[0] > 0)
-print(b[:, 0], b[:, 0] > 0)
+#print(b[0], b[0] > 0)
+#print(b[:, 0], b[:, 0] > 0)
 
 
 
@@ -55,13 +55,13 @@ else:
 因为它们排成一维向量都是6个元素，所以只要view函数的参数一致，得到的结果都是一样的。
 '''
 a=t.Tensor([[[1,2,3],[4,5,6]]])
-b=t.Tensor([1,2,3,4,5,6])
+b=t.Tensor([[[[[1,2,3,4,5,6]]]]])
 
-#print(a.view(1,6))
+print(a.view(1, 1, 1, -1))
 #print(b.view(1,6))
 
 #print(a.view(1, -1)) # "-1" 为自适应
-#print(b.view(-1, 6))
+#print(b.view(-1, 2,))
 
 ########
 m = nn.Linear(20, 20)
