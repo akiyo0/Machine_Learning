@@ -1,7 +1,57 @@
+import os
+import numpy as np
 import tensorflow as tf
 
-IMG_WIDTH = IMG_HEIGHT = 128
+from tqdm import tqdm
+
+from skimage.io import imread
+from skimage.transform import resize
+import matplotlib.pyplot as plt
+import random
+
 IMG_CHANNELS = 3
+IMG_WIDTH = IMG_HEIGHT = 128
+TRAIN_PATH = '/Volumes/TimeMachine/Github/Machine_Learning/Deep_Learning/Neural_Network/Object/item_3_U-Net/DATASET/training'
+TEST_PATH = '/Volumes/TimeMachine/Github/Machine_Learning/Deep_Learning/Neural_Network/Object/item_3_U-Net/DATASET/test'
+
+train_images = next(os.walk(TRAIN_PATH + '/images'))[2]
+test_images = next(os.walk(TEST_PATH + '/images'))[2]
+
+train_mask = next(os.walk(TRAIN_PATH + '/1st_manual'))[2]
+test_mask = next(os.walk(TEST_PATH + '/mask'))[2]
+
+X_train = np.zeros((len(train_images), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
+Y_train = np.zeros((len(train_images), IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
+
+# Resizing training images and masks
+for n, File in tqdm(enumerate(train_images), total=len(train_images)):
+    img = imread(TRAIN_PATH + '/images/' + File)[:, :, :IMG_CHANNELS]
+    X_train[n] = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True)
+    mask = np.zeros((IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
+    for mask_file in train_mask:
+        mask_ = imread(TRAIN_PATH + '/1st_manual/' + mask_file)
+        mask_ = np.expand_dims(resize(mask_, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True), axis=-1)
+
+        #mask = np.maximum(mask, mask_)
+        mask = mask_
+
+    Y_train[n] = mask
+
+X_test = np.zeros((len(test_images), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
+sizes_test = []
+
+for n, File in tqdm(enumerate(test_images), total=len(test_images)):
+    img = imread(TEST_PATH + '/images/' + File)[:, :, :IMG_CHANNELS]
+    sizes_test.append([img.shape[0], img.shape[1]])
+    X_test[n] = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True)
+    
+print('Done!')
+
+image_x = random.randint(0, len(train_images))
+plt.imshow(X_train[image_x])
+plt.show()
+plt.imshow(np.squeeze(Y_train[image_x]))
+plt.show()
 
 inputs = tf.keras.layers.Input((IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS))
 
@@ -62,4 +112,40 @@ outputs = tf.keras.layers.Conv2D(1, (1, 1), activation='sigmoid')(c9)
 model = tf.keras.Model(inputs=[inputs], outputs=[outputs])
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-print(model.summary())
+#print(model.summary())
+
+checkpointer = tf.keras.callbacks.ModelCheckpoint('model_for_nuclei.h5', verbose=1, save_best_only=True)
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(patience=3, monitor='val_loss'),
+    tf.keras.callbacks.TensorBoard(log_dir='logs'),
+    checkpointer
+]
+results = model.fit(X_train, Y_train, batch_size=16, epochs=25, callbacks=callbacks)
+
+idx = random.randint(0, len(X_train))
+
+preds_train = model.predict(X_train[:int(X_train.shape[0]*0.9)], verbose=1)
+preds_val = model.predict(X_train[int(X_train.shape[0]*0.9):], verbose=1)
+preds_test = model.predict(X_test, verbose=1)
+
+preds_train_t = (preds_train > 0.5).astype(np.uint8)
+preds_val_t = (preds_val > 0.5).astype(np.uint8)
+preds_test_t = (preds_test > 0.5).astype(np.uint8)
+
+ix = random.randint(0, len(preds_train_t))
+plt.imshow(X_train[ix])
+plt.show()
+
+plt.imshow(np.squeeze(Y_train[ix]))
+plt.show()
+
+plt.show(np.squeeze(preds_train_t[ix]))
+plt.show()
+
+ix = random.randint(0, len(preds_val_t))
+plt.imshow(X_train[int(X_train.shape[0]*0.9):][ix])
+plt.show()
+plt.imshow(np.squeeze(Y_train[int(Y_train.shape[0]*0.9):][ix]))
+plt.show()
+plt.imshow(np.squeeze(preds_val_t[ix]))
+plt.show()
