@@ -18,6 +18,7 @@ from torch import nn
 import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
+
 import numpy as np
 
 
@@ -1175,7 +1176,6 @@ def get_tokenized_imdb(data):
     def tokenizer(text):
         return [tok.lower() for tok in text.split(' ')]
     return [tokenizer(review) for review, _ in data]
-
 
 def preprocess_imdb(data, vocab):
     max_l = 500  # 将每条评论通过截断或者补0，使得长度变成500

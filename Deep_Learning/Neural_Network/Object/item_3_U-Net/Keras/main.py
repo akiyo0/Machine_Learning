@@ -210,7 +210,7 @@ visualize(group_images(patches_masks_train[0:N_sample, :, :, :], 5),
           './' + name_experiment + '/' + "sample_input_masks").show()
 '''
 # =========== Construct and save the model arcitecture =====
-n_ch = patches_imgs_train.shape[1]
+n_ch =                  .shape[1]
 patch_height = patches_imgs_train.shape[2]
 patch_width = patches_imgs_train.shape[3]
 

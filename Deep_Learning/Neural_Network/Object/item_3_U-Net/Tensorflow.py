@@ -1,4 +1,5 @@
 import os
+from PIL import Image, ImageChops
 import numpy as np
 import tensorflow as tf
 
@@ -17,9 +18,6 @@ TEST_PATH = '/Volumes/TimeMachine/Github/Machine_Learning/Deep_Learning/Neural_N
 train_images = next(os.walk(TRAIN_PATH + '/images'))[2]
 test_images = next(os.walk(TEST_PATH + '/images'))[2]
 
-train_mask = next(os.walk(TRAIN_PATH + '/1st_manual'))[2]
-test_mask = next(os.walk(TEST_PATH + '/mask'))[2]
-
 X_train = np.zeros((len(train_images), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
 Y_train = np.zeros((len(train_images), IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
 
@@ -27,15 +25,13 @@ Y_train = np.zeros((len(train_images), IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
 for n, File in tqdm(enumerate(train_images), total=len(train_images)):
     img = imread(TRAIN_PATH + '/images/' + File)[:, :, :IMG_CHANNELS]
     X_train[n] = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True)
-    mask = np.zeros((IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
-    for mask_file in train_mask:
-        mask_ = imread(TRAIN_PATH + '/1st_manual/' + mask_file)
-        mask_ = np.expand_dims(resize(mask_, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True), axis=-1)
-
-        #mask = np.maximum(mask, mask_)
-        mask = mask_
-
-    Y_train[n] = mask
+    mask = imread(TRAIN_PATH + '/mask/' + File[:2] + "_training_mask.gif" ,0)
+    manual = imread(TRAIN_PATH + '/1st_manual/' + File[:2] + "_manual1.gif" ,0)
+    mask = resize(mask, (mask.shape[0], mask.shape[1], 3))
+    input = img - mask
+    plt.imshow(input)
+    plt.show()
+    Y_train[n] = resize(input, (IMG_HEIGHT, IMG_WIDTH, 1), mode='constant', preserve_range=True)
 
 X_test = np.zeros((len(test_images), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
 sizes_test = []
