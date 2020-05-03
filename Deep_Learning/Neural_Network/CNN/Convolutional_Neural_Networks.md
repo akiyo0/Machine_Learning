@@ -1,4 +1,5 @@
 ## 对 卷积神经网络(CNN) 的若干点补充
+
 ### Batch_Size
 Batch_Size（批尺寸）是机器学习中一个重要参数。Batch 的选择，首先决定的是下降的方向。
 如果数据集比较小，完全可以采用全数据集 (Full Batch Learning) 的形式，这样做至少有 2 个好处：
@@ -95,7 +96,7 @@ for param in model.parameters():
 `<class 'torch.FloatTensor'> (20L,)
 <class 'torch.FloatTensor'> (20L, 1L, 5L, 5L)`
 
-## 卷积神经网络的层级结构
+# 卷积神经网络（CNN）的层级结构
 + 数据输入层 (Input layer)
 + 卷积计算层 (CONV layer)
 + ReLU激励层 (ReLU layer)
@@ -112,28 +113,37 @@ for param in model.parameters():
 
 ## 卷积层
 ### 卷积
-1. 卷积的定义
-    我们称 [公式] 为 [公式] 的卷积
-    其连续的定义为：
-    
-    其离散的定义为：
-    
-    这两个式子有一个共同的特征：
-    
-    参考链接
-    如何通俗易懂地解释卷积？ - 马同学的回答 - 知乎
-    https://www.zhihu.com/question/22298352/answer/228543288
 
-2. 反卷积
-2. 转置卷积
+1. 卷积的定义[^define_of_C]
+训练神经网络生成图片，将低分辨率的图片转换为高分辨率的图片时，通常会使用插值方法进行处理。
+   + 最近邻插值 (Nearest neighbor interpolation)
+   + 双线性插值 (Bi-Linear interpolation)
+   + 双立方插值 (Bi-Cubic interpolation)
+如果我们想要我们的网络可以学习到最好地上采样的方法，我们这个时候就可以采用转置卷积。这个方法不会使用预先定义的插值方法，它具有可以学习的参数。
 
-一文搞懂反卷积，转置卷积
-https://blog.csdn.net/LoseInVain/article/details/81098502
+卷积操作中输入值和输出值之间存在位置上的连接关系。
+卷积操作是多对一(many-to-one)的映射关系，而转置卷积为一对多(one-to-many)的映射关系。
+
+1. 转置卷积
+对输入矩阵的操作：将其摊平(flatten)为列向量。
+对卷积核的操作：
+$$\left(\begin{array}{cccccccccccccccc}
+w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{1,1} & w_{1,2} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0 & 0 & 0 & 0 \\
+0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{1,1} & w_{1,2} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{1,1} & w_{1,2} & 0 & w_{2,0} & w_{2,1} & w_{2,2} & 0 \\
+0 & 0 & 0 & 0 & 0 & w_{0,0} & w_{0,1} & w_{0,2} & 0 & w_{1,0} & w_{1,1} & w_{1,2} & 0 & w_{2,0} & w_{2,1} & w_{2,2}
+\end{array}\right)$$
+然后对操作后的 卷积核 和 数据矩阵 进行矩阵乘法。
+ 
+4. 反卷积
+
+
+[^define_of_C]: 参考文献1：[如何通俗易懂地解释卷积？马同学](https://www.zhihu.com/question/22298352/answer/228543288)<br>参考文献2：[一文搞懂反卷积，转置卷积](https://blog.csdn.net/LoseInVain/article/details/81098502)
 
 ### 卷积层关键操作
 + 局部关联：每个神经元看做一个滤波器(filter)
 + 窗口滑动：filter对局部数据计算
-感受野：receptive field
++ 感受野：receptive field
 
 关键词
 + 深度/depth（解释见下图）
@@ -240,3 +250,37 @@ fine-tuning就是使用已用于其他目标、预训练好模型的权重或者
 具体做法:
 + 复用相同层的权重，新定义层取随机权重初始值
 + 调大新定义层的的学习率，调小复用层学习率
+
+
+## 特征选择 AND 特征提取[^feature]
+**特征选择**（feature selection）和 **特征提取**（Feature extraction）都属于(或可以统称为)降维（Dimension reduction）。
+这两者都是试图减少特征数据集中的属性（或者称为特征）的数目；但是两者采用不同的方法。
+**特征提取**通过属性间的关系，组合不同的属性得到新的属性，这样改变了原来的特征空间。主要手段包括 PCA、LDA和SVD[^SVD]。
+CNN特征提取[^Extraction]：
+[^Extraction]: [三大特征提取器（RNN/CNN/Transformer）](https://www.cnblogs.com/sandwichnlp/p/11612596.html#卷积神经网络cnn)
+**特征选择**是从原始特征数据集中选择出子集，是一种包含的关系，没有更改原始的特征空间。主要手段包含以下：
+1. Filter
+    主要思想是：对每一维的特征“打分”，即给每一维的特征赋予权重，这样的权重就代表着该维特征的重要性，然后依据权重排序。
+    主要的方法有：Chi-squared test(卡方检验)，ID3(信息增益)，correlation coefficient scores(相关系数)
+2. Wrapper
+    其主要思想是：将子集的选择看作是一个搜索寻优问题，生成不同的组合，对组合进行评价，再与其他的组合进行比较。这样就将子集的选择看作是一个是一个优化问题，这里有很多的优化算法可以解决，尤其是一些启发式的优化算法，如GA，PSO，DE，ABC等，详见“优化算法——人工蜂群算法(ABC)”，“优化算法——粒子群算法(PSO)”。
+    主要方法有：recursive feature elimination algorithm(递归特征消除算法)
+3. Embedded
+    主要思想是：在模型既定的情况下学习出对提高模型准确性最好的属性。这句话并不是很好理解，其实是讲在确定模型的过程中，挑选出那些对模型的训练有重要意义的属性。
+    主要方法：正则化。如岭回归就是在基本线性回归的过程中加入了正则项。
+
+[^feature]: 参考文献：[特征选择与特征提取](https://blog.csdn.net/qq_41996090/article/details/88076031)
+[^SVD]: SVD：奇异值分解 (Singular Value Decomposition) 本质上是一种数学的方法，在机器学习领域中被广泛使用。
+
+## 输入空间、特征空间、输出空间[^input space]
+[^input space]: 参考文献：[机器学习（一）--输入空间、特征空间、输出空间](https://blog.csdn.net/hz_jhx/article/details/80727431)
+**输入空间**：输入 $X$ 的所有可能取值的集合为输入空间 (input space)。输入空间可以是有限集合空间(finite topological space?)，也可以是整个欧氏空间(euclidean space)。输出 $Y$ 可能取值的集合是**输出空间** (output space) 也是同样。
+
+**特征空间**：对于输入空间每个具体的输入称为**一个实例**(an instance)，这个实例是由特征向量(feature vector)表示。下式中 $x$ 为输入空间 $X$ 中的一个输入实例，由 $n$ 维特征向量组成
+$$x=\left(x^{(1)}, x^{(2)}, \cdots, x^{(\mathrm{n})}\right)^{T} (1.1)$$
+
+一般的，用大写的 $X$ OR $Y$ 代表输入输出空间，小写的 $x$ OR $y$ 代表一个具体的输入输出实例（标量或者向量）。向量表示时默认为列向量，对于输入向量，通常用行向量转置的方式来表示列向量。
+$$x_{i}=\left(x_{i}^{(1)}, x_{i}^{(2)}, \cdots, x_{i}^{(\mathrm{n})}\right)^{T} (1.2)$$
+
+$(1.1)$ 与 $(1.2)$ 的不同之处在于，$x_i$ 代表多个输入变量 $x$ 中的第 $i$ 个。式 $(1.2)$ 表示，第 $i$ 个输入变量中，由 $n$ 个特征组成。
+

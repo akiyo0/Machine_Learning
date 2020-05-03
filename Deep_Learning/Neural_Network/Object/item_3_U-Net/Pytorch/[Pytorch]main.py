@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import config_file
 
 class Net(nn.Module):
     def __init__(self):
@@ -54,5 +53,3 @@ class Net(nn.Module):
         r = r.reshape() #???
         r = r.permute(1, 0)
 
-def train(args, model, device, train_loader, optimizer, epoch):
-    model.train()
