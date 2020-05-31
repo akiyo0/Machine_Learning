@@ -332,14 +332,64 @@ def main():
     )
 ```
 ```python
+def train(train_loader, model, criterion, optimizer, epoch, args):
+    model.train()
+    for batch_idx, (input, target) in enumerate(train_loader):
+        output = model(input)
+        loss = criterion(output, target)
+        
+```
+```python
 def validate(val_loader, model, criterion, args):
     model.eval()
     with torch.no_grad():
-    
+        for batch_idx, (input, target) in enumerate(val_loader):
+            output = model(input)
+            loss = criterion(output, target)
 ```
 ```python
 if __name__ == '__main__':
     main()
+```
+
+
+### FCN
+```python
+train_data = CityscapesDataset(csv_file=train_file, phase='train')
+train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=8)
+val_data = CityscapesDataset(csv_file=val_file, phase='val', flip_rate=0)
+val_loader = DataLoader(val_data, batch_size=1, num_workers=8)
+
+vgg_model = VGGNet(requires_grad=True, remove_fc=True)
+fcn_model = FCNs(pretrained_net=vgg_model, n_class=n_class)
+
+criterion = nn.BCEWithLogitsLoss()
+optimizer = optim.RMSprop(fcn_model.parameters(), lr=lr, momentum=momentum, weight_decay=w_decay)
+scheduler = lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma) # decay LR by a factor of 0.5 every 30 epochs
+```
+
+```python
+def train():
+    for epoch in range(epochs):
+        scheduler.step()
+        for iter, batch in enumerate(train_loader):
+            optimizer.zero_grad()
+            
+            outputs = fcn_model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        
+        torch.save(fcn_model, model_path)
+        val(epoch)
+```
+```python
+def val(epoch):
+    fcn_model.eval()
+    for iter, batch in enumerate(val_loader):
+        output = fcn_model(inputs)
+        output = output.data.cpu().numpy()
+    # Calculate average IoU
 ```
 
 ## 并行编程
