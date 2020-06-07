@@ -1,6 +1,6 @@
 import torch as t
 import torch.nn as nn
-import torchsnooper
+#import torchsnooper
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
