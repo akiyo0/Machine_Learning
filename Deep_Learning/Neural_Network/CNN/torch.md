@@ -205,6 +205,10 @@ $$
 
 ### torch.nn.MaxPool2d
 
+### torch.nn.BatchNorm2d
+```python
+torch.nn.BatchNorm2d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+```
 
 ## torch.nn.functional
 ### F.pad()

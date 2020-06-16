@@ -281,6 +281,7 @@ $$v_{d w}=0, v_{d b}=0 ; s_{d w}=0, s_{d b}=0$$
 #### 卷积
 
 1. 卷积的定义[^define_of_C]
+2.
    训练神经网络生成图片，将低分辨率的图片转换为高分辨率的图片时，通常会使用插值方法进行处理。
     + 最近邻插值 (Nearest neighbor interpolation)
     + 双线性插值 (Bi-Linear interpolation)
@@ -305,6 +306,9 @@ $$v_{d w}=0, v_{d b}=0 ; s_{d w}=0, s_{d b}=0$$
 
 
 [^define_of_C]: 参考文献1：[如何通俗易懂地解释卷积？马同学](https://www.zhihu.com/question/22298352/answer/228543288)<br>参考文献2：[一文搞懂反卷积，转置卷积](https://blog.csdn.net/LoseInVain/article/details/81098502)
+
+[一文搞懂 deconvolution、transposed convolution、sub-­pixel or fractional convolution](https://www.cnblogs.com/shine-lee/p/11559825.html)
+
 
 #### 卷积层关键操作
 
