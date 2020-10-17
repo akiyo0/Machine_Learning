@@ -7,6 +7,59 @@ PyTorch Examples: [link](https://github.com/pytorch/examples)
 ## torch.utils
 
 ### torch.utils.data
+#### torch.utils.data.Dataset
+是一个抽象类, 自定义的Dataset需要继承它并且实现两个成员方法:[^dataset]
+
+自定义Datasets框架
+```python
+class CustomDataset(data.Dataset):#需要继承data.Dataset
+    def __init__(self):
+        # TODO
+        # 1. Initialize file path or list of file names.
+        pass
+    def __getitem__(self, index): # (2)
+        # TODO
+        # 1. Read one data from file (e.g. using numpy.fromfile, PIL.Image.open).
+        # 2. Preprocess the data (e.g. torchvision.Transform).
+        # 3. Return a data pair (e.g. image and label).
+        # 这里需要注意的是，第一步：read one data，是一个data
+        pass
+    def __len__(self): # (3)
+        # You should change 0 to the total size of your dataset.
+        return 0
+```
+
+1. `__getitem__()` #每次怎么读数据
+2. `__len__()`
+
+```python
+ def __getitem__(self, index):
+    img_path, label = self.data[index].img_path, self.data[index].label
+    img = Image.open(img_path)
+    return img, label
+```
+值得一提的是, pytorch还提供了很多常用的transform操作, 在torchvision.transforms 里，提供了：
++ 归一化
++ 对PIL.Image进行裁剪、缩放等操作
++ PIL.Image/numpy.ndarray与Tensor的相互转化
+
+常用的有Resize, RandomCrop, Normalize, ToTensor (将PIL或numpy转为torch.Tensor。有对numpy数组的转换受限的例子，所以这里建议在__getitem__()里面用PIL来读图片, 而不是用skimage.io)
+
+通常也会使用 transforms.Compose 将 transforms 组合在一起。e.g.
+```python
+transform1 = transforms.Compose([
+    transforms.ToTensor(), # range [0, 255] -> [0.0,1.0]
+    transforms.Normalize(mean = (0.5, 0.5, 0.5), std = (0.5, 0.5, 0.5))
+    ]
+)
+```
+
+
+
+
+
+
+[^dataset]: [Pytorch数据读取(Dataset, DataLoader, DataLoaderIter)](https://zhuanlan.zhihu.com/p/30934236)
 
 #### torch.utils.data.DataLoader
 数据加载器。组合数据集和采样器，并在数据集上提供单进程或多进程迭代器。
@@ -22,6 +75,24 @@ class torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, sampler=
 + collate_fn (callable, optional) –
 + pin_memory (bool, optional) –
 + drop_last (bool, optional) – 如果数据集大小不能被batch size整除，则设置为True后可删除最后一个不完整的batch。如果设为False并且数据集的大小不能被batch size整除，则最后一个batch将更小。(默认: False)
+
+##### torch.utils.data.DataLoader.DataLoaderIter
+上面提到, DataLoaderIter就是DataLoaderIter的一个框架, 用来传给DataLoaderIter 一堆参数, 并把自己装进 DataLoaderIter 里。
+其实到这里就可以满足大多数训练的需求了, 比如
+```python
+class CustomDataset(Dataset): 
+    # 自定义自己的dataset
+
+dataset = CustomDataset()
+dataloader = Dataloader(dataset, ...)
+
+for data in dataloader:
+   # training...
+```
+在for 循环里, 总共有三点操作:
+1. 调用了dataloader 的`__iter__()` 方法, 产生了一个DataLoaderIter
+2. 反复调用DataLoaderIter 的`__next__()`来得到batch, 具体操作就是, 多次调用dataset的`__getitem__()`方法 (如果num_worker>0就多线程调用), 然后用collate_fn来把它们打包成batch. 中间还会涉及到shuffle , 以及sample 的方法等, 这里就不多说了.
+3. 当数据读完后, `__next__()`抛出一个StopIteration异常, for循环结束, dataloader 失效.
 
 ## torch.optim
 

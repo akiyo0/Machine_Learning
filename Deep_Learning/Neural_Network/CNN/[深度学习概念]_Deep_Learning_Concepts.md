@@ -499,20 +499,6 @@ $(1.1)$ 与 $(1.2)$ 的不同之处在于，$x_i$ 代表多个输入变量 $x$ �
 
 
 
-### torch.optim.lr_scheduler[^引用来源]
-[^引用来源]: [torch.optim.lr_scheduler：调整学习率](https://blog.csdn.net/qyhaill/article/details/103043637)
-
-torch.optim.lr_scheduler：调整学习率
-综述
-1.1 lr_scheduler综述
-
-```python
-scheduler.step()
-```
-
-```python
-optimizer.step()
-```
 
 ### `optimizer.step()`和`scheduler.step()`的区别[^来源os]
 `optimizer.step()`通常用在每个mini-batch之中，而`scheduler.step()`通常用在epoch里面,但是不绝对，可以根据具体的需求来做。只有用了optimizer.step()，模型才会更新，而scheduler.step()是对lr进行调整。通常我们有
@@ -527,6 +513,20 @@ model = net.train(model, loss_function, optimizer, scheduler, num_epochs = 100)
 
 [^来源os]: [pytorch学习笔记(1)-optimizer.step()和scheduler.step()](https://blog.csdn.net/qq_20622615/article/details/83150963)
 
+#### torch.optim.lr_scheduler[^引用来源]
+[^引用来源]: [torch.optim.lr_scheduler：调整学习率](https://blog.csdn.net/qyhaill/article/details/103043637)
+
+torch.optim.lr_scheduler：调整学习率
+综述
+1.1 lr_scheduler综述
+
+```python
+scheduler.step()
+```
+
+```python
+optimizer.step()
+```
 
 
 ### 梯度置空[^引用来源2]
