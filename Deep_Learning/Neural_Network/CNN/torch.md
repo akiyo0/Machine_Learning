@@ -30,6 +30,47 @@ class CustomDataset(data.Dataset):#需要继承data.Dataset
 ```
 
 1. `__getitem__()` #每次怎么读数据
+    凡是在类中定义了这个__getitem__ 方法，那么它的实例对象（假定为p），可以像这样
+
+    p[key] 取值，当实例对象做p[key] 运算时，会调用类中的方法__getitem__。
+
+    一般如果想使用索引访问元素时，就可以在类中定义这个方法（__getitem__(self,   key) ）。
+
+
+```python
+'''Python 3 中的类'''
+class DataBase:
+    def __init__(self, id, address):
+        '''初始化方法'''
+        self.id = id
+        self.address = address
+
+    def __getitem__(self, key):
+        return self.__dict__.get(key, "100")
+
+    def get_dict(self):
+        print(self.__dict__)
+
+
+data = DataBase(1, "192.168.2.11")
+print(data["hi"])
+print(data["id"])
+print(data["address"])
+
+print("*****")
+
+print(data.get_dict())
+
+```
+Output:
+```
+100
+1
+192.168.2.11
+*****
+{'id': 1, 'address': '192.168.2.11'}
+```
+    
 2. `__len__()`
 
 ```python
