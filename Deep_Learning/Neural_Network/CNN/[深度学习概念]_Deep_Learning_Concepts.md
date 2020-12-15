@@ -163,13 +163,21 @@ loss(input, target)
 
 
 
-## 最优化
-深度学习的优化算法主要有 `GD` , `SGD` , `Momentum`, `RMSProp` 和 `Adam` 算法
+## 优化器
+关于优化(Optimization)：目的是沿着 Objective function $J(θ)$ 参数 $\theta \in \mathbb{R}^{d}$ 的反向梯度 $-\nabla_{\theta} J(\theta)$。来不断更新模型参数
+来到达目标函数的极小值点（收敛）。
 
+Gradient descent is a way to minimize an objective function $J(θ)$ parameterized by a model’s parameters $\theta \in \mathbb{R}^{d}$ by updating the parameters in the opposite direction of the gradient of the objective function $\nabla_{\theta} J(\theta)$ w.r.t. to the parameters. 
+
+
+
+### Gradient descent
 ### 反向传播
+
 ```python
 loss.backward()
 ```
+
 https://blog.csdn.net/u014303046/article/details/78200010
 https://www.jianshu.com/p/6ab6f53874f7
 
@@ -202,7 +210,23 @@ https://blog.csdn.net/qq_25737169/article/details/78847691
 
 https://zhuanlan.zhihu.com/p/25631496
 
-### 优化器
+
+
+### Gradient descent Variants
+(1)BGD; (2)SGD; (3) Mini-batch GD;
+
+### Gradient descent optimization algorithms
+
+梯度下降优化算法是为了减少震荡，提高收敛速度。
+
+ `Momentum`, `RMSProp` 和 `Adam` 算法
+
+1. Momentum
+2. Nesterov accelerated gradient
+3. Adagrad
+4. Adadelta
+5. RMSprop
+
 #### 动量（Momentum）
 mini-batch SGD 算法虽然有很快的训练速度，但结果并不总是全局最优。另外需要挑选合适的超参（学习率），不合适的超参会导致收敛速度过慢（震荡收敛？）或跳过最优区间。
 Momentum基于梯度的移动指数加权平均，可以解决mini-batch SGD优化算法更新幅度摆动大的问题，同时可以使得网络的收敛速度更快。
