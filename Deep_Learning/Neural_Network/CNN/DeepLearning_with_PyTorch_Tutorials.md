@@ -331,7 +331,50 @@ for epoch in range(epochs):
 [来源1]: https://zhuanlan.zhihu.com/p/35597976
 [权威来源2]: https://cs231n.github.io/neural-networks-2/#datapre
 
-**课时 67 Batch Norm**
+
+
+**课时 53 MNIST测试实战**
+
+```torch.argmax(input)``` Returns the indices of the maximum value of all elements in the `input` tensor.
+If there are multiple maximal values then the indices of the first maximal value are returned.
+
+```python
+a = torch.randn(4, 4)
+torch.argmax(a)
+torch.argmax(a, dim=1)
+```
+
+```
+tensor([[ 1.3398,  0.2663, -0.2686,  0.2450],
+        [-0.7401, -0.8805, -0.3402, -1.1936],
+        [ 0.4907, -1.3948, -1.0691, -0.3132],
+        [-1.6092,  0.5419, -0.2993,  0.3195]])
+tensor(0)
+tensor([ 0,  2,  0,  1])
+```
+
+test once <u>per several batch</u> 
+test once <u>per epoch</u> 
+
+
+
+**课时54  Visdom可视化**
+
+```shell
+pip3 install tensorboard
+pip3 install visdom
+python3 -m visdom.server
+```
+
+**课时55 过拟合与欠拟合**
+
+**课时56 交叉验证**
+
+
+
+
+
+**课时67 Batch Norm**
 
 Intuitive explanation(直观解释)：为了使梯度下降时，使loss函数的等高线均匀分布，最优解的寻优过程明显会变得平缓，使其更快收敛。Image Normalization：
 Batch Normalizatinon：
