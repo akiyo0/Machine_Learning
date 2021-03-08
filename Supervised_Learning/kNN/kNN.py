@@ -12,9 +12,9 @@ def kNN(dataset, X, k, labels):
         label_count[knn_label] = label_count.get(knn_label, 0) + 1
 
     sorted_label_count = sorted(label_count.items(), key = lambda x: x[1], reverse=True)
+    return sorted_label_count[0][0]
 
-    return sorted_label_count
-
+'''
 datasets = np.array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
 labels = ['A', 'A', 'B', 'B']
 #print(kNN(datasets, [0, 0], 3, labels))
@@ -31,3 +31,4 @@ labels = ['爱情片', '爱情片', '爱情片', '动作片', '动作片', '动�
 X = [18,  90]
 
 print(kNN(np.array(datasets), X, 3, labels))
+'''
