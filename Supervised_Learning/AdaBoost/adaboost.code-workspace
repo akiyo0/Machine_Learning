@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/Users/caujoeng/opt/anaconda3/envs/tensorflow/bin/python"
+	}
+}

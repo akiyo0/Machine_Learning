@@ -1,6 +1,8 @@
+import pdb
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import seaborn as sns
 
 def stumpClassify(dataMat, column, threshIneq, threshold):
@@ -47,29 +49,33 @@ def buildStump(dataMat, labels, D):
                     bestStump['inequal'] = inequal
 
     return bestStump, minError, bestClasEst                
-                
-"""
-dataMat = pd.DataFrame([
-    [1., 2.1], [1.5, 1.6], [1.3, 1.], [1., 1.], [2., 1.]
-], columns = ['X', 'Y'])
 
-labels = [1.0, 1.0, -1.0, -1.0, 1.0]
+def main():
+    dataMat = pd.DataFrame([
+        [1., 2.1], [1.5, 1.6], [1.3, 1.], [1., 1.], [2., 1.]
+    ], columns = ['X', 'Y'])
 
-'''
-sns.set()
-ax = sns.scatterplot(x='X', y='Y', data=dataMat, hue=labels)
-ax.set(xlim=(0.8, None))
-ax.set(ylim=(0.8, None))
-plt.show()
-'''
+    labels = [1.0, 1.0, -1.0, -1.0, 1.0]
 
-D = np.ones((5, 1)) / 5
-dataMat = np.array(dataMat)
-labels = np.array(labels)
-a, b, c = buildStump(dataMat, labels, D)
 
-print(a)
-print(b)
-print(c)
+    sns.set()
 
-"""
+    ax = sns.scatterplot(x='X', y='Y', data=dataMat, hue=labels, palette="Paired")
+    ax.set(xlim=(0.8, None))
+    ax.set(ylim=(0.8, None))
+    plt.show()
+
+
+    D = np.ones((5, 1)) / 5
+    dataMat = np.array(dataMat)
+    labels = np.array(labels)
+    a, b, c = buildStump(dataMat, labels, D)
+
+    print(a)
+    print(b)
+    print(c)
+
+if __name__ == "__name__":
+    pdb.set_trace()
+    main()
+    
